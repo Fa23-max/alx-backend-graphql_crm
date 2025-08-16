@@ -1,23 +1,28 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from django.db import transaction
 import re
 from .models import Customer, Product, Order
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
         fields = ("id", "name", "email", "phone", "created_at")
+        interfaces = (graphene.relay.Node, )
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
         fields = ("id", "name", "price", "stock", "created_at")
+        interfaces = (graphene.relay.Node, )
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = ("id", "customer", "products", "order_date", "total_amount")
+        interfaces = (graphene.relay.Node, )
 
 # Input types for mutations
 class CustomerInput(graphene.InputObjectType):
@@ -175,6 +180,18 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     hello = graphene.String()
+    all_customers = DjangoFilterConnectionField(CustomerType, filterset_class=CustomerFilter)
+    all_products = DjangoFilterConnectionField(ProductType, filterset_class=ProductFilter)
+    all_orders = DjangoFilterConnectionField(OrderType, filterset_class=OrderFilter)
     
     def resolve_hello(self, info):
         return "Hello, GraphQL!"
+        
+    def resolve_all_customers(self, info, **kwargs):
+        return Customer.objects.all()
+        
+    def resolve_all_products(self, info, **kwargs):
+        return Product.objects.all()
+        
+    def resolve_all_orders(self, info, **kwargs):
+        return Order.objects.all()
