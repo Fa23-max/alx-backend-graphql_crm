@@ -1,5 +1,5 @@
 import graphene
-from app.schema import Query as AppQuery, Mutation as AppMutation
+from crm.schema import Query as AppQuery, Mutation as AppMutation
 
 class Query(AppQuery, graphene.ObjectType):
     pass
