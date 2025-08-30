@@ -4,6 +4,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from django.db import transaction
 import re
 from .models import Customer, Product, Order
+from crm.models import Product
 from .filters import CustomerFilter, ProductFilter, OrderFilter
 
 class CustomerType(DjangoObjectType):
